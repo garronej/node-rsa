@@ -1,32 +1,64 @@
 
 const NodeRSA = require("..");
+const crypto = require("crypto");
 
 {
 
     var seed = Buffer.from("hello world", "utf8");
 
-    var previousExportedKey = undefined;
+    const data= crypto.randomBytes(10000);
+
+    var previousExportedKeys = undefined;
 
     for (var i = 0; i < 10; i++) {
 
-        var key = NodeRSA.generateKeyPairFromSeed(
+        const nodeRSA = NodeRSA.generateKeyPairFromSeed(
             seed,
             8 * 80
         );
 
-        var exportedKey = key.exportKey("pkcs1");
+        const [ privateKey, publicKey ]= [ "private", "public" ]
+            .map(type => nodeRSA.exportKey(`pkcs1-${type}`));
+        
+        for (const key of [privateKey, publicKey]) {
+
+            const [encryptMethod, decryptMethod] =
+                key === privateKey ?
+                    ["encryptPrivate", "decryptPublic"] :
+                    ["encrypt", "decrypt"]
+                ;
+
+            const encodingKey = key;
+
+            const decodingKey = [publicKey, privateKey]
+                .find(key => key !== encodingKey);
+
+            const encodingNodeRSA = new NodeRSA(encodingKey);
+            const decodingNodeRSA = new NodeRSA(decodingKey);
+
+            if (!data.equals(decodingNodeRSA[decryptMethod](encodingNodeRSA[encryptMethod](data)))) {
+
+                throw new Error("encode/decode problem");
+
+            }
+
+        }
+
+        const exportedKeys = `${publicKey}\n${privateKey}`;
 
         if (
-            previousExportedKey !== undefined &&
-            previousExportedKey !== exportedKey
+            previousExportedKeys !== undefined &&
+            previousExportedKeys !== exportedKeys
         ) {
             throw new Error("Not functional");
         }
 
-        previousExportedKey = exportedKey;
+        previousExportedKeys = exportedKeys;
+
+        console.log("ok");
 
     }
 
-    console.log(previousExportedKey);
+    console.log("PASS");
 
 }
