@@ -7,12 +7,12 @@
 
 var constants = require('constants');
 var rsa = require('./libs/rsa.js');
-var crypt = require('crypto');
 var ber = require('asn1').Ber;
 var _ = require('./utils')._;
 var utils = require('./utils');
 var schemes = require('./schemes/schemes.js');
 var formats = require('./formats/formats.js');
+var seedrandom = require('seedrandom');
 
 if (typeof constants.RSA_NO_PADDING === "undefined") {
     //patch for node v0.10.x, constants do not defined
@@ -77,6 +77,49 @@ module.exports = (function () {
 
         this.setOptions(options);
     }
+
+    /**
+     * @param seed: {Buffer}
+     * @param bits?: {number} mod 8 === 0, length key in bits. Default 2048.
+     * @param exp?: {number} length key in bits. Default 2048.
+     * 
+     * returns: NodeRSA
+     */
+    NodeRSA.generateKeyPairFromSeed = function generateKeyPairFromSeed(seed, bits, exp) {
+
+        var randomBackup = Math.random;
+
+        Math.random = (function(){
+
+            let prev = undefined;
+
+            function random() {
+
+                prev = seedrandom(
+                    prev === undefined ?
+                        seed.toString("hex") :
+                        prev.toFixed(12)
+                )();
+
+                return prev;
+
+            };
+
+            random.isSeeded = true;
+
+            return random;
+
+        })();
+
+        var key= new NodeRSA();
+
+        key.generateKeyPair(bits, exp);
+
+        Math.random = randomBackup;
+
+        return key;
+
+    };
 
     /**
      * Set and validate options for key instance
@@ -183,9 +226,9 @@ module.exports = (function () {
         if (!formats.detectAndImport(this.keyPair, keyData, format) && format === undefined) {
             throw Error("Key format must be specified");
         }
-        
+
         this.$cache = {};
-        
+
         return this;
     };
 

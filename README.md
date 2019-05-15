@@ -1,5 +1,8 @@
 # Node-RSA
 
+This fork enable generating key from seed.  
+See ``test/myTest.js`` for usage example.
+
 Node.js RSA library<br/>
 Based on jsbn library from Tom Wu http://www-cs-students.stanford.edu/~tjw/jsbn/
 
