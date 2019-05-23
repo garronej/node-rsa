@@ -22,25 +22,30 @@ const crypto = require("crypto");
         
         for (const key of [privateKey, publicKey]) {
 
+
             const [encryptMethod, decryptMethod] =
                 key === privateKey ?
                     ["encryptPrivate", "decryptPublic"] :
                     ["encrypt", "decrypt"]
                 ;
 
-            const encodingKey = key;
+            const encryptionKey = key;
 
-            const decodingKey = [publicKey, privateKey]
-                .find(key => key !== encodingKey);
+            const decryptionKey = [publicKey, privateKey]
+                .find(key => key !== encryptionKey);
 
-            const encodingNodeRSA = new NodeRSA(encodingKey);
-            const decodingNodeRSA = new NodeRSA(decodingKey);
+            const encryptionNodeRSA = new NodeRSA(encryptionKey);
+            const decryptionNodeRSA = new NodeRSA(decryptionKey);
 
-            if (!data.equals(decodingNodeRSA[decryptMethod](encodingNodeRSA[encryptMethod](data)))) {
+            const before= Date.now();
+
+            if (!data.equals(decryptionNodeRSA[decryptMethod](encryptionNodeRSA[encryptMethod](data)))) {
 
                 throw new Error("encode/decode problem");
 
             }
+
+            console.log(`elapsed: ${key === privateKey ? "private": "public"} ${Date.now()-before}`);
 
         }
 
