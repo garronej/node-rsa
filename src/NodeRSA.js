@@ -91,7 +91,7 @@ module.exports = (function () {
 
         Math.random = (function(){
 
-            let prev = undefined;
+            var prev = undefined;
 
             function random() {
 
