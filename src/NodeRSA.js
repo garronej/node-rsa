@@ -7,7 +7,6 @@
 
 var constants = require('constants');
 var rsa = require('./libs/rsa.js');
-var ber = require('asn1').Ber;
 var _ = require('./utils')._;
 var utils = require('./utils');
 var schemes = require('./schemes/schemes.js');
