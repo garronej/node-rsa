@@ -7,9 +7,9 @@ module.exports = {
             var crypt = require((function(){return "crypto"})());
             if (typeof crypt.publicEncrypt === 'function' && typeof crypt.privateDecrypt === 'function') {
                 if (typeof crypt.privateEncrypt === 'function' && typeof crypt.publicDecrypt === 'function') {
-                    engine = require('./io.js');
+                    engine = require((function () { return './io.js' })());
                 } else {
-                    engine = require('./node12.js');
+                    engine = require((function () { return './node12.js'; })());
                 }
             }
         }
