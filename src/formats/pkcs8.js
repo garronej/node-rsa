@@ -3,11 +3,11 @@ var _ = require('../utils')._;
 var PUBLIC_RSA_OID = '1.2.840.113549.1.1.1';
 var utils = require('../utils');
 
-const PRIVATE_OPENING_BOUNDARY = '-----BEGIN PRIVATE KEY-----';
-const PRIVATE_CLOSING_BOUNDARY = '-----END PRIVATE KEY-----';
+var PRIVATE_OPENING_BOUNDARY = '-----BEGIN PRIVATE KEY-----';
+var PRIVATE_CLOSING_BOUNDARY = '-----END PRIVATE KEY-----';
 
-const PUBLIC_OPENING_BOUNDARY = '-----BEGIN PUBLIC KEY-----';
-const PUBLIC_CLOSING_BOUNDARY = '-----END PUBLIC KEY-----';
+var PUBLIC_OPENING_BOUNDARY = '-----BEGIN PUBLIC KEY-----';
+var PUBLIC_CLOSING_BOUNDARY = '-----END PUBLIC KEY-----';
 
 module.exports = {
     privateExport: function (key, options) {
