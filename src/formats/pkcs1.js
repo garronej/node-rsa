@@ -2,11 +2,11 @@ var ber = require('asn1').Ber;
 var _ = require('../utils')._;
 var utils = require('../utils');
 
-const PRIVATE_OPENING_BOUNDARY = '-----BEGIN RSA PRIVATE KEY-----';
-const PRIVATE_CLOSING_BOUNDARY = '-----END RSA PRIVATE KEY-----';
+var PRIVATE_OPENING_BOUNDARY = '-----BEGIN RSA PRIVATE KEY-----';
+var PRIVATE_CLOSING_BOUNDARY = '-----END RSA PRIVATE KEY-----';
 
-const PUBLIC_OPENING_BOUNDARY = '-----BEGIN RSA PUBLIC KEY-----';
-const PUBLIC_CLOSING_BOUNDARY = '-----END RSA PUBLIC KEY-----';
+var PUBLIC_OPENING_BOUNDARY = '-----BEGIN RSA PUBLIC KEY-----';
+var PUBLIC_CLOSING_BOUNDARY = '-----END RSA PUBLIC KEY-----';
 
 module.exports = {
     privateExport: function (key, options) {
