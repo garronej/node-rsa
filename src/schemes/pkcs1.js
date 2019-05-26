@@ -137,7 +137,9 @@ module.exports.makeScheme = function (key, options) {
         return buffer.slice(i + 1, buffer.length);
     };
 
+    /** Cant be used from the browser */
     Scheme.prototype.sign = function (buffer) {
+
         var hashAlgorithm = this.options.signingSchemeOptions.hash || DEFAULT_HASH_FUNCTION;
         if (this.options.environment === 'browser') {
             hashAlgorithm = SIGN_ALG_TO_HASH_ALIASES[hashAlgorithm] || hashAlgorithm;
@@ -155,7 +157,11 @@ module.exports.makeScheme = function (key, options) {
         }
     };
 
+    /** Cant be used from the browser */
     Scheme.prototype.verify = function (buffer, signature, signature_encoding) {
+
+        console.log("verify");
+
         if (this.options.encryptionSchemeOptions && this.options.encryptionSchemeOptions.padding == constants.RSA_NO_PADDING) {
             //RSA_NO_PADDING has no verify data
             return false;

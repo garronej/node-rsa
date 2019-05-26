@@ -2,7 +2,6 @@
  * PKCS_OAEP signature scheme
  */
 
-var BigInteger = require('../libs/jsbn');
 var crypt = require('../crypto');
 
 module.exports = {

@@ -78,7 +78,7 @@ module.exports = (function () {
     }
 
     /**
-     * @param seed: {Buffer}
+     * @param seed: {Uint8Array}
      * @param bits?: {number} mod 8 === 0, length key in bits. Default 2048.
      * @param exp?: {number} length key in bits. Default 2048.
      * 
@@ -96,7 +96,7 @@ module.exports = (function () {
 
                 prev = seedrandom(
                     prev === undefined ?
-                        seed.toString("hex") :
+                        Buffer.from(seed).toString("binary") :
                         prev.toFixed(12)
                 )();
 

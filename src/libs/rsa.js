@@ -40,7 +40,6 @@
  */
 
 var _ = require('../utils')._;
-var crypt = require('../crypto');
 var BigInteger = require('./jsbn.js');
 var utils = require('../utils.js');
 var schemes = require('../schemes/schemes.js');

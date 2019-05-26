@@ -1,10 +1,30 @@
 'use strict'
 
-var crypto = require('crypto');
+module.exports= require('create-hash');
 
-module.exports = crypto;
+{
 
-var crypto_randomBytes_back= crypto.randomBytes;
+    var nodeCrypto = undefined;
+
+    [
+        "createSign",
+        "createVerify",
+    ].forEach(function (fnName) {
+
+        module.exports[fnName] = function () {
+
+            if (nodeCrypto === undefined) {
+                nodeCrypto = require((function () { return "crypto" })());
+            }
+
+            nodeCrypto[fnName].apply(nodeCrypto, arguments);
+
+        };
+
+
+    });
+
+}
 
 module.exports.randomBytes = (function () {
 
@@ -16,20 +36,31 @@ module.exports.randomBytes = (function () {
     // https://github.com/nodejs/node/blob/master/lib/internal/crypto/random.js#L48
     var MAX_UINT32 = 4294967295
 
-
     function getRandomValues(abv) {
-        var l = abv.length;
-        while (l--) {
-            abv[l] = Math.floor(Math.random() * 256);
+
+        if (Math.random.isSeeded) {
+
+            var l = abv.length;
+            while (l--) {
+                abv[l] = Math.floor(Math.random() * 256);
+            }
+            return abv;
+
+
+        } else {
+
+            var crypto = global.crypto || global.msCrypto
+
+            if (crypto && crypto.getRandomValues) {
+                return crypto.getRandomValues(abv);
+            } else {
+                throw new Error('Secure random number generation is not supported by this browser.\nUse Chrome, Firefox or Internet Explorer 11')
+            }
         }
-        return abv;
+
     }
 
     return function randomBytes(size) {
-
-        if( !Math.random.isSeeded ){
-            return crypto_randomBytes_back.apply(crypto, arguments);
-        }
 
         // phantomjs needs to throw
         if (size > MAX_UINT32) throw new RangeError('requested too many random bytes')

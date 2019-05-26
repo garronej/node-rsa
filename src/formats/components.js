@@ -1,5 +1,4 @@
 var _ = require('../utils')._;
-var utils = require('../utils');
 
 module.exports = {
     privateExport: function (key, options) {
