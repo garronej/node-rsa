@@ -81,10 +81,11 @@ module.exports = (function () {
      * @param seed: {Uint8Array}
      * @param bits?: {number} mod 8 === 0, length key in bits. Default 2048.
      * @param exp?: {number} length key in bits. Default 2048.
+     * @param environment?: 'browser'|'node' Default auto detect.
      * 
      * returns: NodeRSA
      */
-    NodeRSA.generateKeyPairFromSeed = function generateKeyPairFromSeed(seed, bits, exp) {
+    NodeRSA.generateKeyPairFromSeed = function generateKeyPairFromSeed(seed, bits, exp, environment) {
 
         var randomBackup = Math.random;
 
@@ -110,7 +111,13 @@ module.exports = (function () {
 
         })();
 
-        var key= new NodeRSA();
+        var options= undefined;
+
+        if( environment !== undefined ){
+            options= { "environment": environment };
+        }
+
+        var key= new NodeRSA(undefined, undefined, options);
 
         key.generateKeyPair(bits, exp);
 
