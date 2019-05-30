@@ -1,5 +1,5 @@
 
-const NodeRSA = require("..");
+const NodeRSA = require("../src/NodeRSA");
 const crypto = require("crypto");
 
 {
