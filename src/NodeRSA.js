@@ -82,14 +82,14 @@ module.exports = (function () {
      * @param bits?: {number} mod 8 === 0, length key in bits. Default 2048.
      * @param exp?: {number} length key in bits. Default 2048.
      * @param environment?: 'browser'|'node' Default auto detect.
-     * 
+     *
      * returns: NodeRSA
      */
     NodeRSA.generateKeyPairFromSeed = function generateKeyPairFromSeed(seed, bits, exp, environment) {
 
         var randomBackup = Math.random;
 
-        Math.random = (function(){
+        Math.random = (function () {
 
             var prev = undefined;
 
@@ -97,9 +97,13 @@ module.exports = (function () {
 
                 prev = seedrandom(
                     prev === undefined ?
-                        Buffer.from(seed).toString("binary") :
+                        Buffer.from(
+                            seed.buffer,
+                            seed.byteOffset,
+                            seed.length
+                        ).toString("hex") :
                         prev.toFixed(12)
-                )();
+                ,{ "global": false }).quick();
 
                 return prev;
 
@@ -111,19 +115,19 @@ module.exports = (function () {
 
         })();
 
-        var options= undefined;
+        var options = undefined;
 
-        if( environment !== undefined ){
-            options= { "environment": environment };
+        if (environment !== undefined) {
+            options = { "environment": environment };
         }
 
-        var key= new NodeRSA(undefined, undefined, options);
+        var nodeRSA = new NodeRSA(undefined, undefined, options);
 
-        key.generateKeyPair(bits, exp);
+        nodeRSA.generateKeyPair(bits, exp);
 
         Math.random = randomBackup;
 
-        return key;
+        return nodeRSA;
 
     };
 
@@ -329,7 +333,7 @@ module.exports = (function () {
                 return res.toString(encoding);
             }
         } catch (e) {
-            throw Error('Error during encryption. Original error: ' + e);
+            throw Error('Error during encryption. Original error: ' + e.stack);
         }
     };
 

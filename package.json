@@ -4,7 +4,8 @@
   "description": "Node.js RSA library",
   "main": "src/NodeRSA.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "build": "node bin/builder.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +37,8 @@
     "grunt-simple-mocha": "0.4.1",
     "jit-grunt": "0.10.0",
     "lodash": "^4.17.11",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "frontend-build-tools": "github:garronej/frontend-build-tools"
   },
   "dependencies": {
     "asn1": "^0.2.4",
