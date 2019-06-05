@@ -2,17 +2,18 @@
 var NodeRSA = require("../src/NodeRSA");
 var randomBytes = require("../src/crypto").randomBytes;
 var detectEnvironment = require("../src/utils").detectEnvironment;
+var BigInteger = require("../src/libs/jsbn");
 
-var log= (function(){
+var log = (function () {
 
-    var acc= "";
+    var acc = "";
 
-    var f= function(str){
-        acc+= str;
+    var f = function (str) {
+        acc += str + "\n";
         console.log(str);
     }
 
-    f.alert= function(){
+    f.alert = function () {
 
         alert(acc);
 
@@ -24,93 +25,125 @@ var log= (function(){
 
 var seed = Buffer.from("hello world", "utf8");
 
-var data = randomBytes(500);
+var data = randomBytes(10);
 
-var previousExportedKeys = undefined;
+["Mixed", "Peter Olson", "Tom Wu"].forEach(function (author) {
 
-["browser", "node"].forEach(function (environment) {
+    console.log("BigNumber impl: " + author);
 
-    if (environment === "node" && detectEnvironment() === "browser") {
-        return;
-    }
+    BigInteger.setImpl(author);
 
-    log(environment);
+    var previousExportedKeys = undefined;
 
-    var start = Date.now();
+    ["browser", "node"].forEach(function (environment) {
 
-    var nodeRSA = NodeRSA.generateKeyPairFromSeed(
-        seed,
-        8 * 80,
-        undefined,
-        environment
-    );
+        if (environment === "node" && detectEnvironment() === "browser") {
+            return;
+        }
 
-    log("Keys generation: " + (Date.now() - start) + "ms" );
+        log(environment);
 
-    var [privateKey, publicKey] = ["private", "public"]
-        .map(type => nodeRSA.exportKey(`pkcs1-${type}`));
+        var start = Date.now();
 
-    for (const key of [privateKey, publicKey]) {
+        var nodeRSA = NodeRSA.generateKeyPairFromSeed(
+            seed,
+            8 * 80,
+            undefined,
+            environment
+        );
+
+        log("Keys generation: " + (Date.now() - start) + "ms");
+
+        var [privateKey, publicKey] = ["private", "public"]
+            .map(type => nodeRSA.exportKey(`pkcs1-${type}`));
+
+        for (const key of [privateKey, publicKey]) {
 
 
-        var [encryptMethod, decryptMethod] =
-            key === privateKey ?
-                ["encryptPrivate", "decryptPublic"] :
-                ["encrypt", "decrypt"]
-            ;
+            var [encryptMethod, decryptMethod] =
+                key === privateKey ?
+                    ["encryptPrivate", "decryptPublic"] :
+                    ["encrypt", "decrypt"]
+                ;
 
-        var encryptionKey = key;
+            var encryptionKey = key;
 
-        var decryptionKey = [publicKey, privateKey]
-            .find(key => key !== encryptionKey);
+            var decryptionKey = [publicKey, privateKey]
+                .find(key => key !== encryptionKey);
 
-        var encryptionNodeRSA = new NodeRSA(encryptionKey, { environment });
+            var encryptionNodeRSA = new NodeRSA(encryptionKey, { environment });
 
-        var decryptionNodeRSA = new NodeRSA(decryptionKey, { environment });
+            var decryptionNodeRSA = new NodeRSA(decryptionKey, { environment });
 
-        var before = Date.now();
+            var before = Date.now();
 
-        var encryptedData = encryptionNodeRSA[encryptMethod](data);
+            var encryptedData = encryptionNodeRSA[encryptMethod](data);
 
-        log("encryption with " +  (encryptionKey === privateKey ? "private" : "public") + " key of " + data.length + " Bytes took " + (Date.now() - before) + "ms");
+            log("encryption with " + (encryptionKey === privateKey ? "private" : "public") + " key of " + data.length + " Bytes took " + (Date.now() - before) + "ms");
 
-        before = Date.now();
+            before = Date.now();
 
-        var dataBack = decryptionNodeRSA[decryptMethod](encryptedData);
+            var dataBack = decryptionNodeRSA[decryptMethod](encryptedData);
 
-        log("encryption with " +  (decryptionKey === privateKey ? "private" : "public") + " key of " + data.length + " Bytes took " + (Date.now() - before) + "ms");
-        
+            log("decryption with " + (decryptionKey === privateKey ? "private" : "public") + " key of " + data.length + " Bytes took " + (Date.now() - before) + "ms");
 
-        if (!data.equals(dataBack)) {
 
-            console.log({
-                "data    ": data.toString("hex"),
-                "dataBack": dataBack.toString("hex")
-            });
+            if (!data.equals(dataBack)) {
 
-            throw new Error("encode/decode problem");
+                console.log({
+                    "data    ": data.toString("hex"),
+                    "dataBack": dataBack.toString("hex")
+                });
+
+                throw new Error("encode/decode problem");
+
+            }
 
         }
 
-    }
+        const exportedKeys = `${publicKey}\n${privateKey}`;
 
-    const exportedKeys = `${publicKey}\n${privateKey}`;
+        if (
+            previousExportedKeys !== undefined &&
+            previousExportedKeys !== exportedKeys
+        ) {
+            console.log({
+                previousExportedKeys,
+                exportedKeys
+            })
+            throw new Error("Not functional");
+        }
 
-    if (
-        previousExportedKeys !== undefined &&
-        previousExportedKeys !== exportedKeys
-    ) {
-        throw new Error("Not functional");
-    }
+        previousExportedKeys = exportedKeys;
 
-    previousExportedKeys = exportedKeys;
+        percentage(BigInteger.map);
+
+        console.log(Array.from(BigInteger.map));
+
+        BigInteger.map.clear();
+
+    });
 
 
 });
 
+
+function percentage(map) {
+
+    const tot = Array.from(map.values()).map(({ duration }) => duration)
+        .reduce((prev, cur) => prev + cur, 0);
+
+    for (const value of map.values()) {
+
+        value.per = ((value.duration / tot) * 100).toFixed(2) + "%";
+
+    }
+
+}
+
 log("PASS!");
 
-if( detectEnvironment() === "browser" ){
+if (detectEnvironment() === "browser") {
 
     log.alert();
 

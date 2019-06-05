@@ -32,16 +32,19 @@
   "homepage": "https://github.com/rzcoder/node-rsa",
   "devDependencies": {
     "chai": "^4.2.0",
+    "frontend-build-tools": "github:garronej/frontend-build-tools",
     "grunt": "^1.0.3",
     "grunt-contrib-jshint": "^2.0.0",
     "grunt-simple-mocha": "0.4.1",
     "jit-grunt": "0.10.0",
     "lodash": "^4.17.11",
     "nyc": "^13.1.0",
-    "frontend-build-tools": "github:garronej/frontend-build-tools"
+    "omniobserver": "github:garronej/omniobserver"
   },
   "dependencies": {
     "asn1": "^0.2.4",
+    "big-integer": "^1.6.43",
+    "bn.js": "^4.11.8",
     "create-hash": "1.2.0",
     "seedrandom": "3.0.1"
   }

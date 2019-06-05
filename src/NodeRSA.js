@@ -351,7 +351,7 @@ module.exports = (function () {
 
             return this.$getDecryptedData(res, encoding);
         } catch (e) {
-            throw Error('Error during decryption (probably incorrect key). Original error: ' + e);
+            throw Error('Error during decryption (probably incorrect key). Original error: ' + e.stack);
         }
     };
 
