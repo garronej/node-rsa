@@ -25,15 +25,16 @@ var log = (function () {
 
 var seed = Buffer.from("hello world", "utf8");
 
-var data = randomBytes(10);
+var data = randomBytes(1000);
 
-["Mixed", "Peter Olson", "Tom Wu"].forEach(function (author) {
+var previousExportedKeys = undefined;
+
+[undefined, "Peter Olson", "Tom Wu"].forEach(function (author) {
 
     console.log("BigNumber impl: " + author);
 
-    BigInteger.setImpl(author);
+    BigInteger.setModPowImpl(author);
 
-    var previousExportedKeys = undefined;
 
     ["browser", "node"].forEach(function (environment) {
 
@@ -54,26 +55,46 @@ var data = randomBytes(10);
 
         log("Keys generation: " + (Date.now() - start) + "ms");
 
-        var [privateKey, publicKey] = ["private", "public"]
-            .map(type => nodeRSA.exportKey(`pkcs1-${type}`));
+        var privateKey;
+        var publicKey;
 
-        for (const key of [privateKey, publicKey]) {
+        {
+
+            var arr = ["private", "public"]
+                .map(function (type) { return nodeRSA.exportKey("pkcs1-" + type); });
+
+            privateKey = arr[0];
+            publicKey = arr[1];
+
+        }
 
 
-            var [encryptMethod, decryptMethod] =
-                key === privateKey ?
-                    ["encryptPrivate", "decryptPublic"] :
-                    ["encrypt", "decrypt"]
-                ;
+        [privateKey, publicKey].forEach(function (key) {
+
+            var encryptMethod;
+            var decryptMethod;
+
+            {
+
+                var arr =
+                    key === privateKey ?
+                        ["encryptPrivate", "decryptPublic"] :
+                        ["encrypt", "decrypt"]
+                    ;
+
+                encryptMethod = arr[0];
+                decryptMethod = arr[1];
+
+            }
 
             var encryptionKey = key;
 
             var decryptionKey = [publicKey, privateKey]
-                .find(key => key !== encryptionKey);
+                .find(function (key) { return key !== encryptionKey; });
 
-            var encryptionNodeRSA = new NodeRSA(encryptionKey, { environment });
+            var encryptionNodeRSA = new NodeRSA(encryptionKey, { "environment": environment });
 
-            var decryptionNodeRSA = new NodeRSA(decryptionKey, { environment });
+            var decryptionNodeRSA = new NodeRSA(decryptionKey, { "environment": environment });
 
             var before = Date.now();
 
@@ -99,47 +120,28 @@ var data = randomBytes(10);
 
             }
 
-        }
 
-        const exportedKeys = `${publicKey}\n${privateKey}`;
+        });
+
+        var exportedKeys = publicKey + "\n" + privateKey;
 
         if (
             previousExportedKeys !== undefined &&
             previousExportedKeys !== exportedKeys
         ) {
-            console.log({
-                previousExportedKeys,
-                exportedKeys
-            })
             throw new Error("Not functional");
         }
 
-        previousExportedKeys = exportedKeys;
+        if (previousExportedKeys === undefined) {
+            previousExportedKeys = exportedKeys;
+        }
 
-        percentage(BigInteger.map);
-
-        console.log(Array.from(BigInteger.map));
-
-        BigInteger.map.clear();
 
     });
 
 
 });
 
-
-function percentage(map) {
-
-    const tot = Array.from(map.values()).map(({ duration }) => duration)
-        .reduce((prev, cur) => prev + cur, 0);
-
-    for (const value of map.values()) {
-
-        value.per = ((value.duration / tot) * 100).toFixed(2) + "%";
-
-    }
-
-}
 
 log("PASS!");
 

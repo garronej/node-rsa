@@ -9,6 +9,8 @@ const path = require("path");
 
     await browserify(path.join(module_dir_path, "test", "benchmark.js"), dst_file_path);
 
+    await minify(dst_file_path);
+
     await buildTestHtmlPage(dst_file_path);
 
 })();
