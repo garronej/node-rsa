@@ -14398,9 +14398,9 @@ var getOptimalImpl = function () {
 
     }
 
-    var x = new BigInteger("43333707923008392148807836475609418668581196121976985553579725952491007450681009194163", 10);
-    var e = new BigInteger("370792300839214880783647560941866858119612197698555357972595249100745068100919416316118267076557", 10);
-    var m = new BigInteger("1483169203356859523134590243767467432478448790794221431890380996402980272403677665264473068306229", 10);
+    var x = new BigInteger("4333370792300839214880783647560", 10);
+    var e = new BigInteger("3707923008392148807836475609419", 10);
+    var m = new BigInteger("1483169203356859523134590243760", 10);
 
     var start = Date.now();
 
@@ -15867,7 +15867,6 @@ var previousExportedKeys = undefined;
 
     BigInteger.setModPowImpl(author);
 
-
     ["browser", "node"].forEach(function (environment) {
 
         if (environment === "node" && detectEnvironment() === "browser") {
@@ -15884,6 +15883,8 @@ var previousExportedKeys = undefined;
             undefined,
             environment
         );
+
+        log(BigInteger.modPowImpl.name);
 
         log("Keys generation: " + (Date.now() - start) + "ms");
 

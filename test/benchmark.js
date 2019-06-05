@@ -35,7 +35,6 @@ var previousExportedKeys = undefined;
 
     BigInteger.setModPowImpl(author);
 
-
     ["browser", "node"].forEach(function (environment) {
 
         if (environment === "node" && detectEnvironment() === "browser") {
@@ -52,6 +51,8 @@ var previousExportedKeys = undefined;
             undefined,
             environment
         );
+
+        log(BigInteger.modPowImpl.name);
 
         log("Keys generation: " + (Date.now() - start) + "ms");
 
