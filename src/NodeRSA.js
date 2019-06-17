@@ -78,7 +78,7 @@ module.exports = (function () {
     }
 
     /**
-     * @param seed: {Uint8Array}
+     * @param seed: {Uint8Array|undefined} if undefined keys pure random generation.
      * @param bits?: {number} mod 8 === 0, length key in bits. Default 2048.
      * @param exp?: {number} length key in bits. Default 2048.
      * @param environment?: 'browser'|'node' Default auto detect.
@@ -89,31 +89,35 @@ module.exports = (function () {
 
         var randomBackup = Math.random;
 
-        Math.random = (function () {
+        if (seed !== undefined) {
 
-            var prev = undefined;
+            Math.random = (function () {
 
-            function random() {
+                var prev = undefined;
 
-                prev = seedrandom(
-                    prev === undefined ?
-                        Buffer.from(
-                            seed.buffer,
-                            seed.byteOffset,
-                            seed.length
-                        ).toString("hex") :
-                        prev.toFixed(12)
-                ,{ "global": false }).quick();
+                function random() {
 
-                return prev;
+                    prev = seedrandom(
+                        prev === undefined ?
+                            Buffer.from(
+                                seed.buffer,
+                                seed.byteOffset,
+                                seed.length
+                            ).toString("hex") :
+                            prev.toFixed(12)
+                        , { "global": false }).quick();
 
-            };
+                    return prev;
 
-            random.isSeeded = true;
+                };
 
-            return random;
+                random.isSeeded = true;
 
-        })();
+                return random;
+
+            })();
+
+        }
 
         var options = undefined;
 
